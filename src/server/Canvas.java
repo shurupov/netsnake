@@ -36,4 +36,9 @@ public class Canvas extends JPanel {
     public byte[][] getCells() {
         return cells;
     }
+
+    synchronized public void move(int newX, int newY, int lastX, int lastY) {
+        cells[newY][newX] = 1;
+        cells[lastY][lastX] = 0;
+    }
 }

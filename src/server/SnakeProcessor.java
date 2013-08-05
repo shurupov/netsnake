@@ -4,7 +4,6 @@ import codes.Codes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -87,7 +86,7 @@ public class SnakeProcessor implements Runnable {
                     break;
                 case 3 : step(x - 1, y);
                     break;
-
+                default: return;
             }
 
         }
@@ -95,10 +94,9 @@ public class SnakeProcessor implements Runnable {
     }
 
     private void step(int x, int y) {
-        canvas.getCells()[this.y][this.x] = 0;
+        canvas.move(x, y, this.x, this.y);
         this.x = x;
         this.y = y;
-        canvas.getCells()[y][x] = 1;
         logger.info("New coordinates are {} {}", x, y);
     }
 
