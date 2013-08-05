@@ -38,10 +38,10 @@ public class SnakeProcessor {
             return;
         }
 
-        byte [] field = new byte[4];
+        int [] field = new int[Codes.STEP_VARIANT_COUNT];
         int nextStep;
 
-        while (inputStream.read(field, 0, Codes.STEP_VARIANT_COUNT) != -1) { //we have response
+        while (read(field)) { //we have response
             logger.debug("SnakeProcessor.process visible field received is {}", Arrays.toString(field));
 
             if (hasEmptyCell(field)) {
@@ -61,13 +61,24 @@ public class SnakeProcessor {
 
     }
 
-    private boolean hasEmptyCell(byte [] cells) {
-        for (byte cell : cells) {
+    private boolean hasEmptyCell(int [] cells) {
+        for (int cell : cells) {
             if (cell == 0) {
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean read(int [] field) throws IOException {
+        for (int i = 0; i < field.length; i++) {
+            int readInt = inputStream.read();
+            if (readInt == -1) {
+                return false;
+            }
+            field[i] = readInt;
+        }
+        return true;
     }
 
     private boolean handshake() throws IOException {

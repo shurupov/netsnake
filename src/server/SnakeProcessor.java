@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.net.Socket;
+import java.util.Random;
 
 /**
  * Developer: Eugene Shurupov
@@ -19,6 +20,10 @@ public class SnakeProcessor implements Runnable {
 
     private static Logger logger = LoggerFactory.getLogger(SnakeProcessor.class);
 
+    private static final Object locker = new Object();
+
+    private static final Random RAND = new Random(System.currentTimeMillis());
+
     private final Socket socket;
     private final Reader reader;
     private final OutputStream outputStream;
@@ -26,6 +31,8 @@ public class SnakeProcessor implements Runnable {
 
     private int x;
     private int y;
+
+    private int color;
 
 
     public SnakeProcessor(Socket socket, Canvas canvas) throws IOException {
@@ -54,39 +61,51 @@ public class SnakeProcessor implements Runnable {
         x = (int) (Math.random() * Codes.FIELD_WIDTH);
         y = (int) (Math.random() * Codes.FIELD_HEIGHT);
 
-        canvas.getCells()[y][x] = 1;
+        color = RAND.nextInt();
+
+        logger.info("Color is {}", color);
+
+        canvas.getCells()[y][x] = color;
 
         while (true) {
 
             canvas.repaint();
-            byte[] visibleCells = new byte[]{
-                    getCell(x, y - 1),
-                    getCell(x + 1, y),
-                    getCell(x, y + 1),
-                    getCell(x - 1, y)
-            };
-            outputStream.write(visibleCells);
-            outputStream.flush();
-            Thread.sleep(1000);
 
-            if (bye()) {
-                return;
-            }
+            Thread.sleep(Codes.SLEEP_TIME);
 
-            int nextStep = reader.read();
+            synchronized (locker) {
 
-            logger.debug("SnakeProcessor.process nextStep equals {}", nextStep);
+                int[] visibleCells = new int[]{
+                        getCell(x, y - 1),
+                        getCell(x + 1, y),
+                        getCell(x, y + 1),
+                        getCell(x - 1, y)
+                };
+                for (int cell : visibleCells)
+                outputStream.write(cell);
+                outputStream.flush();
 
-            switch (nextStep) {
-                case 0 : step(x, y - 1);
-                    break;
-                case 1 : step(x + 1, y);
-                    break;
-                case 2 : step(x, y + 1);
-                    break;
-                case 3 : step(x - 1, y);
-                    break;
-                default: return;
+
+                if (bye()) {
+                    return;
+                }
+
+                int nextStep = reader.read();
+
+                logger.debug("SnakeProcessor.process nextStep equals {}", nextStep);
+
+                switch (nextStep) {
+                    case 0 : step(x, y - 1);
+                        break;
+                    case 1 : step(x + 1, y);
+                        break;
+                    case 2 : step(x, y + 1);
+                        break;
+                    case 3 : step(x - 1, y);
+                        break;
+                    default: return;
+                }
+
             }
 
         }
@@ -94,13 +113,13 @@ public class SnakeProcessor implements Runnable {
     }
 
     private void step(int x, int y) {
-        canvas.move(x, y, this.x, this.y);
+        canvas.move(x, y, this.x, this.y, color);
         this.x = x;
         this.y = y;
         logger.info("New coordinates are {} {}", x, y);
     }
 
-    private byte getCell(int x, int y) {
+    private int getCell(int x, int y) {
         logger.debug("SnakeProcessor.getCell {} {}", x, y);
         if (x < 0 || x >= Codes.FIELD_WIDTH || y < 0 || y >= Codes.FIELD_HEIGHT) {
             return 100;
