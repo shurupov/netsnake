@@ -17,7 +17,7 @@ public class SnakeFrame extends JFrame {
 
     public SnakeFrame() {
         super(WINDOW_TITLE);
-        this.setSize(Codes.CELL_SIZE * Codes.FIELD_WIDTH, Codes.CELL_SIZE * Codes.FIELD_HEIGHT + 15);
+        this.setSize(Codes.CELL_SIZE * Codes.FIELD_WIDTH, Codes.CELL_SIZE * Codes.FIELD_HEIGHT + 20);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setVisible(true);
         createGUI();

@@ -29,10 +29,9 @@ public class SnakeProcessor implements Runnable {
     private final OutputStream outputStream;
     private final Canvas canvas;
 
-    private int x;
-    private int y;
-
     private int color;
+
+    Point[] snake = new Point[Codes.SNAKE_LENGTH];
 
 
     public SnakeProcessor(Socket socket, Canvas canvas) throws IOException {
@@ -58,12 +57,16 @@ public class SnakeProcessor implements Runnable {
             return;
         }
 
-        x = (int) (Math.random() * Codes.FIELD_WIDTH);
-        y = (int) (Math.random() * Codes.FIELD_HEIGHT);
+        int x = (int) (Math.random() * Codes.FIELD_WIDTH);
+        int y = (int) (Math.random() * Codes.FIELD_HEIGHT);
 
         color = RAND.nextInt() & 0x00FFFFFF;
 
         logger.info("Color is {}", Integer.toHexString(color));
+
+        for (int i = 0; i < snake.length; i++) {
+            snake[i] = new Point(x, y);
+        }
 
         canvas.getCells()[y][x] = color;
 
@@ -74,6 +77,9 @@ public class SnakeProcessor implements Runnable {
             Thread.sleep(Codes.SLEEP_TIME);
 
             synchronized (locker) {
+
+                x = snake[0].x;
+                y = snake[0].y;
 
                 int[] visibleCells = new int[]{
                         getCell(x, y - 1),
@@ -113,9 +119,14 @@ public class SnakeProcessor implements Runnable {
     }
 
     private void step(int x, int y) {
-        canvas.move(x, y, this.x, this.y, color);
-        this.x = x;
-        this.y = y;
+        canvas.move(x, y, snake[snake.length - 1].x, snake[snake.length - 1].y, color);
+
+        for (int i = snake.length - 1; i > 0; i--) {
+            snake[i] = snake[i - 1];
+        }
+
+        snake[0] = new Point(x, y);
+
         logger.info("New coordinates are {} {}", x, y);
     }
 
@@ -148,5 +159,17 @@ public class SnakeProcessor implements Runnable {
             return true;
         }
         return false;
+    }
+
+    private class Point {
+
+        private Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        public int x;
+        public int y;
+
     }
 }

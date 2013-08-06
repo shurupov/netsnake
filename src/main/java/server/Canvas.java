@@ -13,7 +13,7 @@ import java.awt.*;
 public class Canvas extends JPanel {
 
 
-    private int[][] cells = new int[Codes.FIELD_WIDTH][Codes.FIELD_HEIGHT];
+    private int[][] cells = new int[Codes.FIELD_HEIGHT][Codes.FIELD_WIDTH];
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -38,7 +38,7 @@ public class Canvas extends JPanel {
     }
 
     synchronized public void move(int newX, int newY, int lastX, int lastY, int color) {
-        cells[newY][newX] = color;
         cells[lastY][lastX] = 0;
+        cells[newY][newX] = color;
     }
 }

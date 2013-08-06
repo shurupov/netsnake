@@ -17,10 +17,12 @@ public class Codes {
 
     public static final int STEP_VARIANT_COUNT = 4;
 
-    public static final int FIELD_WIDTH = 10;
-    public static final int FIELD_HEIGHT = 10;
-    public static final int CELL_SIZE = 50;
+    public static final int FIELD_WIDTH = 25;
+    public static final int FIELD_HEIGHT = 20;
+    public static final int CELL_SIZE = 25;
 
     public static final int SLEEP_TIME = 500;
+
+    public static final int SNAKE_LENGTH = 10;
 
 }
