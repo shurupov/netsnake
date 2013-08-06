@@ -61,9 +61,9 @@ public class SnakeProcessor implements Runnable {
         x = (int) (Math.random() * Codes.FIELD_WIDTH);
         y = (int) (Math.random() * Codes.FIELD_HEIGHT);
 
-        color = RAND.nextInt();
+        color = RAND.nextInt() & 0x00FFFFFF;
 
-        logger.info("Color is {}", color);
+        logger.info("Color is {}", Integer.toHexString(color));
 
         canvas.getCells()[y][x] = color;
 

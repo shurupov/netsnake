@@ -1,8 +1,5 @@
 package client;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.*;
 
 /**
@@ -11,8 +8,6 @@ import java.io.*;
  * Time:      0:03
  */
 public class Snake {
-
-    private static Logger logger = LoggerFactory.getLogger(Snake.class);
 
     public static void main(String[] args) throws IOException {
 
