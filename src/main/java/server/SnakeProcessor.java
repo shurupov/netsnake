@@ -98,7 +98,7 @@ public class SnakeProcessor implements Runnable {
 
                 int nextStep = reader.read();
 
-                logger.debug("SnakeProcessor.process nextStep equals {}", nextStep);
+                logger.debug("Snake.process nextStep equals {}", nextStep);
 
                 switch (nextStep) {
                     case 0 : step(x, y - 1);
@@ -131,7 +131,7 @@ public class SnakeProcessor implements Runnable {
     }
 
     private int getCell(int x, int y) {
-        logger.debug("SnakeProcessor.getCell {} {}", x, y);
+        logger.debug("Snake.getCell {} {}", x, y);
         if (x < 0 || x >= Codes.FIELD_WIDTH || y < 0 || y >= Codes.FIELD_HEIGHT) {
             return 100;
         }
@@ -152,10 +152,10 @@ public class SnakeProcessor implements Runnable {
 
     private boolean bye() throws IOException {
         int response = reader.read();
-        logger.debug("SnakeProcessor.bye received code {}", response);
+        logger.debug("Snake.bye received code {}", response);
         if (response == Codes.BYE_REQUEST) {
             socket.close();
-            logger.info("SnakeProcessor.bye bye");
+            logger.info("Snake.bye bye");
             return true;
         }
         return false;

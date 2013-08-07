@@ -16,15 +16,15 @@ import java.util.Arrays;
  * Date:      17.07.13
  * Time:      22:30
  */
-public class SnakeProcessor {
+abstract public class SnakeIntelligence {
 
-    private static Logger logger = LoggerFactory.getLogger(SnakeProcessor.class);
+    protected static Logger logger = LoggerFactory.getLogger(SnakeIntelligence.class);
 
     private final Socket socket;
     private final Writer writer;
     private final InputStream inputStream;
 
-    public SnakeProcessor() throws IOException {
+    public SnakeIntelligence() throws IOException {
 
         socket = new Socket("localhost", Codes.APPLICATION_PORT);
         writer = new OutputStreamWriter(socket.getOutputStream());
@@ -42,7 +42,7 @@ public class SnakeProcessor {
         int nextStep;
 
         while (read(field)) { //we have response
-            logger.debug("SnakeProcessor.process visible field received is {}", Arrays.toString(field));
+            logger.debug("SnakeIntelligence.process visible field received is {}", Arrays.toString(field));
 
             if (hasEmptyCell(field)) {
                 go();
@@ -51,15 +51,16 @@ public class SnakeProcessor {
                 return;
             }
 
-            do {
-                nextStep = (int) Math.floor(Math.random() * Codes.STEP_VARIANT_COUNT);
-            } while (field[nextStep] > 0); //field is filled
+            nextStep = makeStep(field);
+
             logger.info("Next step is " + nextStep);
             writer.write(nextStep);
             writer.flush();
         }
 
     }
+
+    abstract protected int makeStep(int[] field);
 
     private boolean hasEmptyCell(int [] cells) {
         for (int cell : cells) {
@@ -98,14 +99,14 @@ public class SnakeProcessor {
     }
 
     private void bye() throws IOException {
-        logger.info("SnakeProcessor.bye");
+        logger.info("SnakeIntelligence.bye");
         writer.write(Codes.BYE_REQUEST);
         writer.flush();
         socket.close();
     }
 
     private void go() throws IOException {
-        logger.info("SnakeProcessor.go");
+        logger.info("SnakeIntelligence.go");
         writer.write(Codes.GO_REQUEST);
         writer.flush();
     }

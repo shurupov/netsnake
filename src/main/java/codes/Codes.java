@@ -21,7 +21,7 @@ public class Codes {
     public static final int FIELD_HEIGHT = 20;
     public static final int CELL_SIZE = 25;
 
-    public static final int SLEEP_TIME = 500;
+    public static final int SLEEP_TIME = 200;
 
     public static final int SNAKE_LENGTH = 10;
 
