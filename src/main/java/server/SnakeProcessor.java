@@ -18,9 +18,7 @@ import java.util.Random;
  */
 public class SnakeProcessor implements Runnable {
 
-    private static Logger logger = LoggerFactory.getLogger(SnakeProcessor.class);
-
-    private static final Object locker = new Object();
+    private static final Logger logger = LoggerFactory.getLogger(SnakeProcessor.class);
 
     private static final Random RAND = new Random(System.currentTimeMillis());
 
@@ -28,17 +26,19 @@ public class SnakeProcessor implements Runnable {
     private final Reader reader;
     private final OutputStream outputStream;
     private final Canvas canvas;
+    private final Object locker;
 
     private int color;
 
     Point[] snake = new Point[Codes.SNAKE_LENGTH];
 
 
-    public SnakeProcessor(Socket socket, Canvas canvas) throws IOException {
+    public SnakeProcessor(Socket socket, Canvas canvas, Object locker) throws IOException {
         this.socket = socket;
         this.canvas = canvas;
         reader = new InputStreamReader(socket.getInputStream());
         outputStream = socket.getOutputStream();
+        this.locker = locker;
     }
 
     @Override
@@ -72,8 +72,6 @@ public class SnakeProcessor implements Runnable {
 
         while (true) {
 
-            canvas.repaint();
-
             Thread.sleep(Codes.SLEEP_TIME);
 
             synchronized (locker) {
@@ -87,8 +85,9 @@ public class SnakeProcessor implements Runnable {
                         getCell(x, y + 1),
                         getCell(x - 1, y)
                 };
-                for (int cell : visibleCells)
-                outputStream.write(cell);
+                for (int cell : visibleCells) {
+                    outputStream.write(cell);
+                }
                 outputStream.flush();
 
 

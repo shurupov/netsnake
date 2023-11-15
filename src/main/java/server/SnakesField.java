@@ -14,12 +14,17 @@ public class SnakesField {
 
     public static void main(String[] args) throws IOException {
 
-        ServerSocket serverSocket = new ServerSocket(Codes.APPLICATION_PORT);
+        try (ServerSocket serverSocket = new ServerSocket(Codes.APPLICATION_PORT)) {
 
-        SnakeFrame frame = new SnakeFrame();
+            SnakeFrame frame = new SnakeFrame();
 
-        while (true) {
-            new Thread(new SnakeProcessor(serverSocket.accept(), frame.getCanvas())).start();
+            Object locker = new Object();
+
+            new Thread(new CanvasUpdateProcessor(frame.getCanvas(), locker)).start();
+
+            while (true) {
+                new Thread(new SnakeProcessor(serverSocket.accept(), frame.getCanvas(), locker)).start();
+            }
         }
 
     }
